@@ -30,6 +30,21 @@
   "bulk_confirm_publish_single": {
     "message": "Voulez-vous vraiment publier ce fichier ?"
   },
+  "bulk_error": {
+    "message": "Échec de l’opération en bloc. Veuillez réessayer plus tard."
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "Seuls les lettres latines minuscules, les chiffres et les tirets normalisés sont autorisés dans les noms de fichier. Le nom de fichier suivant contient des caractères interdits :"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "Seuls les lettres latines minuscules, les chiffres et les tirets normalisés sont autorisés dans les noms de fichier. Les noms de fichiers suivants contiennent des caractères interdits :"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "Vous devez vous connecter pour générer l’aperçu de plus de 100 fichiers."
+  },
+  "bulk_error_publish_login_required": {
+    "message": "Vous devez vous connecter pour publier plus de 100 fichiers."
+  },
   "bulk_progress_preview_multiple": {
     "message": "Prévisualisation de $1 fichiers sur $2 générée…"
   },
@@ -173,8 +188,14 @@
   "config_manual_host_placeholder": {
     "message": "Nom d'hôte de production (facultatif)"
   },
+  "config_manual_liveHost_placeholder": {
+    "message": "Nom d’hôte dynamique personnalisé (facultatif)"
+  },
   "config_manual_mountpoints_placeholder": {
     "message": "URL du contenu : https://..."
+  },
+  "config_manual_previewHost_placeholder": {
+    "message": "Nom d’hôte d’aperçu personnalisé (facultatif)"
   },
   "config_manual_project_placeholder": {
     "message": "Nom du projet (facultatif)"
@@ -357,6 +378,9 @@
   "error_preview_not_gsheet_ms_excel": {
     "message": "Il s'agit d'un document Microsoft Excel. Convertissez-le au format Google Sheets : Fichier > Enregistrer au format Google Sheets."
   },
+  "error_status_403": {
+    "message": "403 Accès interdit : demandez les autorisations nécessaires à votre administrateur ou à votre administratrice."
+  },
   "error_status_404_content": {
     "message": "404 Introuvable : vérifiez la configuration ou l'URL de Sidekick."
   },
@@ -449,6 +473,15 @@
   "open_preview": {
     "description": "Permet d'ouvrir l'URL d'aperçu d'une branche GitHub donnée.",
     "message": "Ouvrir l'URL d'aperçu"
+  },
+  "open_url": {
+    "message": "Ouvrir l’URL"
+  },
+  "open_urls": {
+    "message": "Ouvrir les URL"
+  },
+  "open_urls_confirm": {
+    "message": "Voulez-vous vraiment ouvrir les URL $1 ?"
   },
   "open_view_doc_source": {
     "message": "Afficher la source du document"
@@ -544,6 +577,9 @@
   "user_login": {
     "message": "Se connecter"
   },
+  "user_login_expired": {
+    "message": "Votre session a expiré, veuillez vous reconnecter."
+  },
   "user_login_hint": {
     "message": "Vous devez vous connecter avant de pouvoir utiliser Sidekick."
   },
@@ -552,6 +588,9 @@
   },
   "user_switch": {
     "message": "Changer d'utilisateur"
+  },
+  "view_doc_source_copied": {
+    "message": "Copié."
   },
   "yesterday_at": {
     "message": "Hier à $1"

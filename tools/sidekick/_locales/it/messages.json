@@ -30,6 +30,21 @@
   "bulk_confirm_publish_single": {
     "message": "Pubblicare questo file?"
   },
+  "bulk_error": {
+    "message": "Operazione in blocco non riuscita. Riprova più tardi."
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "Nei nomi dei file sono consentiti solo i seguenti caratteri latini normalizzati: lettere minuscole, cifre e trattini. Il nome di file seguente contiene caratteri non validi:"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "Nei nomi dei file sono consentiti solo i seguenti caratteri latini normalizzati: lettere minuscole, cifre e trattini. I nomi dei file seguenti contengono caratteri non validi:"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "Per generare l’anteprima di più di 100 file, è necessario accedere."
+  },
+  "bulk_error_publish_login_required": {
+    "message": "Per pubblicare più di 100 file, è necessario accedere."
+  },
   "bulk_progress_preview_multiple": {
     "message": "È stata generata l’anteprima di $1 di $2 file..."
   },
@@ -173,8 +188,14 @@
   "config_manual_host_placeholder": {
     "message": "Nome host di produzione (facoltativo)"
   },
+  "config_manual_liveHost_placeholder": {
+    "message": "Nome host live personalizzato (facoltativo)"
+  },
   "config_manual_mountpoints_placeholder": {
     "message": "URL del contenuto: https://..."
+  },
+  "config_manual_previewHost_placeholder": {
+    "message": "Nome host di anteprima personalizzato (facoltativo)"
   },
   "config_manual_project_placeholder": {
     "message": "Nome progetto (facoltativo)"
@@ -357,6 +378,9 @@
   "error_preview_not_gsheet_ms_excel": {
     "message": "Questo è un documento Microsoft Excel. Convertilo in Fogli Google: File > Salva come foglio Google"
   },
+  "error_status_403": {
+    "message": "403 - Non consentito: chiedi all’amministratore le autorizzazioni necessarie."
+  },
   "error_status_404_content": {
     "message": "404 - Non trovato: controlla la configurazione o l’URL di Sidekick."
   },
@@ -449,6 +473,15 @@
   "open_preview": {
     "description": "Apre l’URL di anteprima per un determinato ramo GitHub",
     "message": "Apri URL di anteprima"
+  },
+  "open_url": {
+    "message": "Apri URL"
+  },
+  "open_urls": {
+    "message": "Apri gli URL"
+  },
+  "open_urls_confirm": {
+    "message": "Desideri aprire $1 URL?"
   },
   "open_view_doc_source": {
     "message": "Visualizza origine del documento"
@@ -544,6 +577,9 @@
   "user_login": {
     "message": "Accedi"
   },
+  "user_login_expired": {
+    "message": "La sessione è scaduta. Accedi di nuovo."
+  },
   "user_login_hint": {
     "message": "Devi effettuare l’accesso prima di poter utilizzare Sidekick."
   },
@@ -552,6 +588,9 @@
   },
   "user_switch": {
     "message": "Cambia utente"
+  },
+  "view_doc_source_copied": {
+    "message": "Copiato."
   },
   "yesterday_at": {
     "message": "Ieri alle $1"

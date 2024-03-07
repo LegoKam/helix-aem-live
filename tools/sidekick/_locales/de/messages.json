@@ -30,6 +30,21 @@
   "bulk_confirm_publish_single": {
     "message": "Möchten Sie diese Datei wirklich veröffentlichen?"
   },
+  "bulk_error": {
+    "message": "Massenvorgang fehlgeschlagen. Versuchen Sie es später erneut."
+  },
+  "bulk_error_illegal_file_name": {
+    "message": "In Dateinamen sind nur normalisierte lateinische Kleinbuchstaben, Ziffern und Bindestriche zulässig. Der folgende Dateiname enthält ungültige Zeichen:"
+  },
+  "bulk_error_illegal_file_names": {
+    "message": "In Dateinamen sind nur normalisierte lateinische Kleinbuchstaben, Ziffern und Bindestriche zulässig. Die folgenden Dateinamen enthalten ungültige Zeichen:"
+  },
+  "bulk_error_preview_login_required": {
+    "message": "Sie müssen sich anmelden, um eine Vorschau von mehr als 100 Dateien zu generieren."
+  },
+  "bulk_error_publish_login_required": {
+    "message": "Sie müssen sich anmelden, um mehr als 100 Dateien zu veröffentlichen."
+  },
   "bulk_progress_preview_multiple": {
     "message": "Vorschau für $1 von $2 Dateien wird generiert …"
   },
@@ -173,8 +188,14 @@
   "config_manual_host_placeholder": {
     "message": "Produktions-Host-Name (optional)"
   },
+  "config_manual_liveHost_placeholder": {
+    "message": "Benutzerdefinierter Live-Hostname (optional)"
+  },
   "config_manual_mountpoints_placeholder": {
     "message": "Inhalts-URL: https://…"
+  },
+  "config_manual_previewHost_placeholder": {
+    "message": "Benutzerdefinierter Vorschau-Hostname (optional)"
   },
   "config_manual_project_placeholder": {
     "message": "Projektname (optional)"
@@ -357,6 +378,9 @@
   "error_preview_not_gsheet_ms_excel": {
     "message": "Dies ist ein Microsoft Excel-Dokument. Bitte konvertieren Sie es in eine Google-Tabelle: „Datei“ > „Als Google-Tabelle speichern“"
   },
+  "error_status_403": {
+    "message": "403 Verboten: Bitten Sie Ihre bzw. Ihren Admin um ausreichende Berechtigungen."
+  },
   "error_status_404_content": {
     "message": "404 Nicht gefunden: Überprüfen Sie die Sidekick-Konfiguration oder URL."
   },
@@ -449,6 +473,15 @@
   "open_preview": {
     "description": "Öffnet die Vorschau-URL für einen bestimmten GitHub-Zweig",
     "message": "Vorschau-URL öffnen"
+  },
+  "open_url": {
+    "message": "URL öffnen"
+  },
+  "open_urls": {
+    "message": "URLs öffnen"
+  },
+  "open_urls_confirm": {
+    "message": "Möchten Sie wirklich $1 URLs öffnen?"
   },
   "open_view_doc_source": {
     "message": "Dokumentenquelle anzeigen"
@@ -544,6 +577,9 @@
   "user_login": {
     "message": "Anmelden"
   },
+  "user_login_expired": {
+    "message": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+  },
   "user_login_hint": {
     "message": "Sie müssen sich anmelden, damit Sie Sidekick nutzen können."
   },
@@ -552,6 +588,9 @@
   },
   "user_switch": {
     "message": "Benutzer wechseln"
+  },
+  "view_doc_source_copied": {
+    "message": "Kopiert!"
   },
   "yesterday_at": {
     "message": "Gestern um $1"

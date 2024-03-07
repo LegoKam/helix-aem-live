@@ -11,6 +11,8 @@
  */
 /* eslint-disable no-console, no-alert */
 
+import sampleRUM from './rum.js';
+
 (() => {
   /**
    * @typedef {Object} ElemConfig
@@ -107,135 +109,138 @@
    * @prop {string} previewHost The host name of a custom preview CDN (optional)
    * @prop {string} liveHost The host name of a custom live CDN (optional)
    * @prop {string} host The production host name to publish content to (optional)
-   * @prop {boolean} byocdn=false <pre>true</pre> if the production host is a 3rd party CDN
+   * @prop {boolean} byocdn=false <code>true</code> if the production host is a 3rd party CDN
    * @prop {boolean} devMode=false Loads configuration and plugins from the development environment
    * @prop {boolean} devOrigin=http://localhost:3000 URL of the local development environment
-   * @prop {boolean} pushDown=false <pre>true</pre> to have the sidekick push down page content
+   * @prop {boolean} pushDown=false <code>true</code> to have the sidekick push down page content
    * @prop {string} pushDownSelector The CSS selector for absolute elements to also push down
    * @prop {ViewConfig[]} specialViews An array of custom {@link ViewConfig|view configurations}
    * @prop {number} adminVersion The specific version of admin service to use (optional)
    */
 
   /**
-   * @external
-   * @name "window.hlx.sidekickConfig"
-   * @type {SidekickConfig}
-   * @description The global variable holding the initial sidekick configuration.
-   */
-
-  /**
-   * @external
-   * @name "window.hlx.sidekick"
-   * @type {Sidekick}
-   * @description The global variable referencing the {@link Sidekick} singleton.
-   */
-
-  /**
-   * @external
-   * @name "window.hlx.sidekickScript"
-   * @type {Element}
-   * @description The <pre>script</pre> element which loaded the sidekick module.
-   */
-
-  /**
    * @event Sidekick#shown
-   * @type {Sidekick} The sidekick
+   * @arg {CustomEvent} e The event
+   * @prop {Sidekick} e.detail.data The sidekick
    * @description This event is fired when the sidekick has been shown.
    */
 
   /**
    * @event Sidekick#hidden
-   * @type {Sidekick} The sidekick
+   * @arg {CustomEvent} e The event
+   * @prop {Sidekick} e.detail.data The sidekick
    * @description This event is fired when the sidekick has been hidden.
    */
 
   /**
    * @event Sidekick#pluginused
-   * @type {Object} The plugin used
-   * @property {string} id The plugin ID
-   * @property {Element} button The button element
+   * @arg {CustomEvent} e The event
+   * @prop {Object} e.detail.data The event payload
+   * @prop {string} e.detail.data.id The plugin ID
+   * @prop {Element} e.detail.data.button The button element
    * @description This event is fired when a sidekick plugin has been used.
    */
 
   /**
    * @event Sidekick#contextloaded
-   * @type {Object} The context object
-   * @property {SidekickConfig} config The sidekick configuration
-   * @property {Location} location The sidekick location
+   * @arg {CustomEvent} e The event
+   * @prop {Object} e.detail.data The event payload
+   * @prop {SidekickConfig} e.detail.data.config The sidekick configuration
+   * @prop {Location} e.detail.data.location The sidekick location
    * @description This event is fired when the context has been loaded.
    */
 
   /**
    * @event Sidekick#statusfetched
-   * @type {Object} The status object
+   * @arg {CustomEvent} e The event
+   * @prop {Object} e.detail.data The status object
    * @description This event is fired when the status has been fetched.
    */
 
   /**
    * @event Sidekick#envswitched
-   * @type {Object} The environment object
-   * @property {string} sourceUrl The URL of the source environment
-   * @property {string} targetUrl The URL of the target environment
+   * @arg {CustomEvent} e The event
+   * @prop {Object} e.detail.data The event payload
+   * @prop {string} e.detail.data.sourceUrl The URL of the source environment
+   * @prop {string} e.detail.data.targetUrl The URL of the target environment
    * @description This event is fired when the environment has been switched
    */
 
   /**
+   * @event Sidekick#previewed
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The previewed path
+   * @description This event is fired when content has been previewed.
+   */
+
+  /**
    * @event Sidekick#updated
-   * @type {string} The updated path
-   * @description This event is fired when a path has been updated.
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data  The updated path
+   * @description This event is fired when content or code has been updated.
+   * This event is deprecated for content, use {@link Sidekick#previewed} instead.
    */
 
   /**
    * @event Sidekick#deleted
-   * @type {string} The deleted path
-   * @description This event is fired when a path has been deleted.
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The deleted path
+   * @description This event is fired when a resource has been deleted.
    */
 
   /**
    * @event Sidekick#published
-   * @type {string} The published path
-   * @description This event is fired when a path has been published.
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The published path
+   * @description This event is fired when content has been published.
    */
 
   /**
    * @event Sidekick#unpublished
-   * @type {string} The unpublished path
-   * @description This event is fired when a path has been unpublished.
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The unpublished path
+   * @description This event is fired when content has been unpublished.
    */
 
   /**
    * @event Sidekick#loggedin
-   * @type {Sidekick} The sidekick
+   * @arg {CustomEvent} e The event
+   * @prop {Sidekick} e.detail.data The sidekick
    * @description This event is fired when a user has logged in.
    */
 
   /**
    * @event Sidekick#loggedout
-   * @type {Sidekick} The sidekick
+   * @arg {CustomEvent} e The event
+   * @prop {Sidekick} e.detail.data The sidekick
    * @description This event is fired when a user has logged out.
    */
 
   /**
    * @event Sidekick#helpnext
-   * @type {string} The help topic
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The help topic
    * @description This event is fired when a user clicks next on a help dialog.
    */
 
   /**
    * @event Sidekick#helpdismissed
-   * @type {string} The help topic
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The help topic
    * @description This event is fired when a help dialog has been dismissed.
    */
 
   /**
    * @event Sidekick#helpacknowledged
-   * @type {string} The help topic
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The help topic
    * @description This event is fired when a help dialog has been acknowledged.
    */
 
   /**
    * @event Sidekick#helpoptedout
-   * @type {string} The help topic
+   * @arg {CustomEvent} e The event
+   * @prop {string} e.detail.data The help topic
    * @description This event is fired when a user decides to opt out of help content.
    */
 
@@ -251,10 +256,10 @@
     'fr',
     'it',
     'ja',
-    'ko-kr',
-    'pt-br',
-    'zh-cn',
-    'zh-tw',
+    'ko',
+    'pt_BR',
+    'zh_CN',
+    'zh_TW',
   ];
 
   /**
@@ -290,70 +295,49 @@
   };
 
   /**
-   * Log RUM for sidekick telemetry.
+   * Detects the platform.
    * @private
-   * @param {string} checkpoint identifies the checkpoint in funnel
-   * @param {Object} data additional data for RUM sample
+   * @param {string} userAgent The user agent
+   * @returns {string} The platform
    */
-  function sampleRUM(checkpoint, data = {}) {
-    sampleRUM.defer = sampleRUM.defer || [];
-    const defer = (fnname) => {
-      sampleRUM[fnname] = sampleRUM[fnname]
-        || ((...args) => sampleRUM.defer.push({ fnname, args }));
-    };
-    sampleRUM.drain = sampleRUM.drain
-      || ((dfnname, fn) => {
-        sampleRUM[dfnname] = fn;
-        sampleRUM.defer
-          .filter(({ fnname }) => dfnname === fnname)
-          .forEach(({ fnname, args }) => sampleRUM[fnname](...args));
-      });
-    sampleRUM.on = (chkpnt, fn) => {
-      sampleRUM.cases[chkpnt] = fn;
-    };
-    defer('observe');
-    defer('cw');
-    try {
-      window.hlx = window.hlx || {};
-      const sk = window.hlx.sidekick;
-      if (!window.hlx.rum) {
-        const usp = new URLSearchParams(sk.location.search);
-        const weight = (usp.get('hlx-sk-rum') === 'on') ? 1 : 10; // with parameter, weight is 1. Defaults to 10.
-        // eslint-disable-next-line no-bitwise
-        const hashCode = (s) => s.split('').reduce((a, b) => (((a << 5) - a) + b.charCodeAt(0)) | 0, 0);
-        const id = `${hashCode(sk.location.href)}-${new Date().getTime()}-${Math.random().toString(16).substr(2, 14)}`;
-        const random = Math.random();
-        const isSelected = (random * weight < 1);
-        // eslint-disable-next-line object-curly-newline
-        window.hlx.rum = { weight, id, random, isSelected, sampleRUM };
-      }
-      const { weight, id } = window.hlx.rum;
-      if (window.hlx && window.hlx.rum && window.hlx.rum.isSelected) {
-        const sendPing = () => {
-          // eslint-disable-next-line object-curly-newline, max-len, no-use-before-define
-          const body = JSON.stringify({ weight, id, referer: sk.location.href, generation: window.hlx.RUM_GENERATION, checkpoint, ...data });
-          const url = `https://rum.hlx.page/.rum/${weight}`;
-          // eslint-disable-next-line no-unused-expressions
-          navigator.sendBeacon(url, body);
-        };
-        sampleRUM.cases = sampleRUM.cases || {
-          cwv: () => sampleRUM.cwv(data) || true,
-          lazy: () => {
-            // use classic script to avoid CORS issues
-            const script = document.createElement('script');
-            script.src = 'https://rum.hlx.page/.rum/@adobe/helix-rum-enhancer@^1/src/index.js';
-            document.head.appendChild(script);
-            return true;
-          },
-        };
-        sendPing(data);
-        if (sampleRUM.cases[checkpoint]) {
-          sampleRUM.cases[checkpoint]();
-        }
-      }
-    } catch (error) {
-      // something went wrong
+  function detectPlatform(userAgent) {
+    userAgent = userAgent.toLowerCase();
+    if (userAgent.includes('(windows')) {
+      return 'windows';
+    } else if (userAgent.includes('(iphone') || userAgent.includes('(ipad')) {
+      return 'ios';
+    } else if (userAgent.includes('(macintosh')) {
+      return 'macos';
+    } else if (userAgent.includes('android')) {
+      return 'android';
+    } else if (userAgent.includes('linux')) {
+      return 'linux';
     }
+    return 'other';
+  }
+
+  /**
+   * Detects the browser.
+   * @private
+   * @param {string} userAgent The user agent
+   * @returns {string} The browser
+   */
+  function detectBrowser(userAgent) {
+    userAgent = userAgent.toLowerCase();
+    if (userAgent.includes('edg/')) {
+      return 'edge';
+    } else if (userAgent.includes('opr/')) {
+      return 'opera';
+    } else if (userAgent.includes('samsung')) {
+      return 'samsung';
+    } else if (userAgent.includes('chrome/')) {
+      return 'chrome';
+    } else if (userAgent.includes('safari/')) {
+      return 'safari';
+    } else if (userAgent.includes('firefox/')) {
+      return 'firefox';
+    }
+    return 'other';
   }
 
   /**
@@ -390,10 +374,14 @@
     if (baseHost === host) {
       return true;
     }
-    // matching project domains
-    const projectDomains = ['.aem.page', '.aem.live', '.hlx.page', '.hlx.live'];
-    if (!projectDomains.find((domain) => baseHost.endsWith(domain)
-      && host.endsWith(domain))) {
+    // check for matching domain suffixes
+    const previewSuffixes = ['.aem.page', '.hlx.page'];
+    const liveSuffixes = ['.aem.live', '.hlx.live'];
+    const isPreview = previewSuffixes.some((suffix) => baseHost.endsWith(suffix))
+      && previewSuffixes.some((suffix) => host.endsWith(suffix));
+    const isLive = liveSuffixes.some((suffix) => baseHost.endsWith(suffix))
+      && liveSuffixes.some((suffix) => host.endsWith(suffix));
+    if (!isPreview && !isLive) {
       return false;
     }
     // project details
@@ -411,7 +399,7 @@
    * Checks a path against supported file extensions.
    * @private
    * @param {string} path The path to check
-   * @returns {boolean} {@code true} if file extension supported, else {@code false}
+   * @returns {boolean} <code>true</code> if file extension supported, else <code>false</code>
    */
   function isSupportedFileExtension(path) {
     const file = path.split('/').pop();
@@ -435,7 +423,7 @@
    * @private
    * @param {Sidekick} sk The sidekick
    * @param {URL} url The URL
-   * @returns {boolean} {@code true} if URL is SharePoint, else {@code false}
+   * @returns {boolean} <code>true</code> if URL is SharePoint, else <code>false</code>
    */
   function isSharePoint(sk, url) {
     const { host } = url;
@@ -449,7 +437,7 @@
    * @private
    * @param {Sidekick} sk The sidekick
    * @param {URL} url The URL
-   * @returns {boolean} {@code true} if URL is SharePoint DM, else {@code false}
+   * @returns {boolean} <code>true</code> if URL is SharePoint DM, else <code>false</code>
    */
   function isSharePointDM(sk, url) {
     return isSharePoint(sk, url)
@@ -462,7 +450,7 @@
    * @private
    * @param {Sidekick} sk The sidekick
    * @param {URL} url The URL
-   * @returns {boolean} {@code true} if URL is SharePoint folder, else {@code false}
+   * @returns {boolean} <code>true</code> if URL is SharePoint folder, else <code>false</code>
    */
   function isSharePointFolder(sk, url) {
     if (isSharePointDM(sk, url)) {
@@ -478,7 +466,7 @@
    * @private
    * @param {Sidekick} sk The sidekick
    * @param {URL} url The URL
-   * @returns {boolean} {@code true} if URL is SharePoint editor, else {@code false}
+   * @returns {boolean} <code>true</code> if URL is SharePoint editor, else <code>false</code>
    */
   function isSharePointEditor(sk, url) {
     const { pathname, search } = url;
@@ -492,7 +480,7 @@
    * @private
    * @param {Sidekick} sk The sidekick
    * @param {URL} url The URL
-   * @returns {boolean} {@code true} if URL is SharePoint viewer, else {@code false}
+   * @returns {boolean} <code>true</code> if URL is SharePoint viewer, else <code>false</code>
    */
   function isSharePointViewer(sk, url) {
     if (isSharePointDM(sk, url)) {
@@ -528,9 +516,21 @@
    * @return {string} The language
    */
   function getLanguage() {
-    return navigator.languages
-      .map((prefLang) => LANGS.find((lang) => prefLang.toLowerCase().startsWith(lang)))
-      .filter((lang) => !!lang)[0] || LANGS[0];
+    for (const navLang of navigator.languages) {
+      const prefLang = navLang.replace('-', '_');
+      const exactMatch = LANGS.includes(prefLang);
+      if (exactMatch) {
+        return prefLang;
+      } else {
+        const prefLangPrefix = prefLang.split('_')[0];
+        const prefixMatch = LANGS.find((lang) => lang.startsWith(prefLangPrefix));
+        if (prefixMatch) {
+          return prefixMatch;
+        }
+      }
+    }
+    // fallback to default
+    return LANGS[0];
   }
 
   /**
@@ -668,13 +668,12 @@
       pushDown,
       pushDownSelector,
       specialViews,
-      hlx5,
       scriptUrl = 'https://www.hlx.live/tools/sidekick/module.js',
       scriptRoot = scriptUrl.split('/').filter((_, i, arr) => i < arr.length - 1).join('/'),
     } = config;
     const publicHost = host && host.startsWith('http') ? new URL(host).host : host;
     const hostPrefix = owner && repo ? `${ref}--${repo}--${owner}` : null;
-    const domain = hlx5 ? 'aem' : 'hlx';
+    const domain = previewHost?.endsWith('.aem.page') ? 'aem' : 'hlx';
     const stdInnerHost = hostPrefix ? `${hostPrefix}.${domain}.page` : null;
     const stdOuterHost = hostPrefix ? `${hostPrefix}.${domain}.live` : null;
     const devUrl = new URL(devOrigin);
@@ -756,7 +755,7 @@
    * Checks if the location has changed.
    * @private
    * @param {Sidekick} sk The sidekick
-   * @returns {boolean} {@code true} if location changed, else {@code false}
+   * @returns {boolean} <code>true</code> if location changed, else <code>false</code>
    */
   function isNewLocation(sk) {
     const { location } = sk;
@@ -998,7 +997,6 @@
       navigator.clipboard.writeText(shareUrl);
       sk.showModal(i18n(sk, 'config_shareurl_copied').replace('$1', config.project));
     }
-    // log telemetry
     sampleRUM('sidekick:share', {
       source: sk.location.href,
       target: shareUrl,
@@ -1038,21 +1036,20 @@
         'shown',
         'hidden',
         'updated',
+        'previewed',
         'published',
         'unpublished',
         'deleted',
         'envswitched',
-        'page-info',
-        'user',
         'loggedin',
         'loggedout',
         'helpnext',
         'helpdismissed',
         'helpacknowlegded',
         'helpoptedout',
+        'projectadded',
       ];
       if (name.startsWith('custom:') || userEvents.includes(name)) {
-        // log telemetry
         sampleRUM(`sidekick:${name}`, {
           source: data?.sourceUrl || sk.location.href,
           target: data?.targetUrl || sk.status.webPath,
@@ -1103,7 +1100,7 @@
    * Determines whether to open a new tab or reuse the existing window.
    * @private
    * @param {Event} evt The event
-   * @returns <pre>true</pre> if a new tab should be opened, else <pre>false</pre>
+   * @returns {boolean} <code>true</code> if a new tab should be opened, else <code>false</code>
    */
   function newTab(evt) {
     return evt.metaKey || evt.shiftKey || evt.which === 2;
@@ -1149,6 +1146,26 @@
   }
 
   /**
+   * Adds the transient add project plugin the sidekick.
+   * @private
+   * @param {Sidekick} sk The sidekick
+   */
+  function addTransientAddProjectPlugin(sk) {
+    sk.add({
+      id: 'add-project',
+      feature: true,
+      condition: (sidekick) => sidekick.config.transient,
+      button: {
+        text: i18n(sk, 'config_project_add'),
+        action: async () => {
+          // instrumented by extension
+          fireEvent(sk, 'projectadded');
+        },
+      },
+    });
+  }
+
+  /**
    * Adds the edit plugin to the sidekick.
    * @private
    * @param {Sidekick} sk The sidekick
@@ -1166,6 +1183,10 @@
             editUrl,
             `hlx-sk-edit--${config.owner}/${config.repo}/${config.ref}${status.webPath}`,
           );
+          sampleRUM('sidekick:editoropened', {
+            source: sk.location.href,
+            target: editUrl,
+          });
         },
         isEnabled: (sidekick) => sidekick.status.edit && sidekick.status.edit.url,
       },
@@ -1410,8 +1431,8 @@
       id: 'delete',
       condition: (s) => s.isProject()
         && s.isAuthorized('preview', 'delete') // show only if authorized and
-        && s.status.preview.status !== 404 // preview exists and
-        && s.status.code !== 200 // not code
+        && s.status.preview.status < 400 // preview exists and
+        && s.status.code.status !== 200 // not code
         && !RESTRICTED_PATHS.includes(s.location.pathname),
       advanced: (s) => s.status.edit.url, // keep hidden if source still exists
       button: {
@@ -1508,8 +1529,8 @@
       id: 'unpublish',
       condition: (s) => s.isProject() && s.isContent()
         && s.isAuthorized('live', 'delete') // show only if authorized and
-        && s.status.live.status !== 404 // published and
-        && s.status.code !== 200 // not code
+        && s.status.live.status < 400 // published and
+        && s.status.code.status !== 200 // not code
         && !RESTRICTED_PATHS.includes(s.location.pathname),
       advanced: (s) => s.status.edit.url, // keep hidden if source still exists
       button: {
@@ -1565,6 +1586,9 @@
 
     const toWebPath = (folder, item) => {
       const { path, type } = item;
+      if (['/', '*', '\\', '!', '?'].find((pattern) => path.includes(pattern))) {
+        return `!ILLEGAL!_${path}`;
+      }
       const nameParts = path.split('.');
       let [file, ext] = nameParts;
       if (isSharePointFolder(sk, sk.location) && ext === 'docx') {
@@ -1588,22 +1612,49 @@
       return `${folder}${folder.endsWith('/') ? '' : '/'}${file}${ext ? `.${ext}` : ''}`;
     };
 
+    const validateWebPaths = (paths) => {
+      const illegal = paths
+        .filter((path) => path.startsWith('!ILLEGAL!_'))
+        .map((path) => path.substring(10));
+      if (illegal.length > 0) {
+        sk.showModal({
+          message: [
+            i18n(sk, `bulk_error_illegal_file_name${illegal.length > 1 ? 's' : ''}`),
+            ...illegal,
+            createTag({
+              tag: 'button',
+              text: i18n(sk, 'close'),
+            }),
+          ],
+          level: 2,
+          sticky: true,
+        });
+        return [];
+      } else {
+        return paths;
+      }
+    };
+
     const getBulkSelection = () => {
       const { location } = sk;
       if (isSharePointFolder(sk, location)) {
-        const isGrid = document.querySelector('div[class~="ms-TilesList"]');
         return [...document.querySelectorAll('#appRoot [role="presentation"] div[aria-selected="true"]')]
+          // exclude folders
           .filter((row) => !row.querySelector('img')?.getAttribute('src').includes('/foldericons/')
             && !row.querySelector('img')?.getAttribute('src').endsWith('folder.svg')
             && !row.querySelector('svg')?.parentElement.className.toLowerCase().includes('folder'))
-          .map((row) => ({
-            type: isGrid
-              ? row.querySelector(':scope i[aria-label]')?.getAttribute('aria-label').trim()
-              : new URL(row.querySelector('img')?.getAttribute('src'), sk.location.href).pathname.split('/').slice(-1)[0].split('.')[0],
-            path: isGrid
-              ? row.querySelector('div[data-automationid="name"]').textContent.trim()
-              : row.querySelector('button')?.textContent.trim(),
-          }));
+          // extract file name and type
+          .map((row) => {
+            const [path, type] = (row.getAttribute('aria-label') || row.querySelector('span')?.textContent)
+              ?.split(',')
+              .map((detail) => detail.trim()) || [];
+            return {
+              path,
+              type: type?.split(' ')[0],
+            };
+          })
+          // validate selection
+          .filter((sel) => sel.path && sel.type);
       } else {
         // gdrive
         return [...document.querySelectorAll('#drive_main_page [role="row"][aria-selected="true"]')]
@@ -1656,7 +1707,7 @@
 
     const getBulkText = ([num, total], type, action, mod) => {
       let i18nKey = `bulk_${type}`;
-      if (num === 0) {
+      if (num === 0 && type !== 'progress') {
         i18nKey = `${i18nKey}_empty`;
       } else {
         i18nKey = `${i18nKey}_${action}_${(total || num) === 1 ? 'single' : 'multiple'}${mod ? `_${mod}` : ''}`;
@@ -1666,20 +1717,21 @@
         .replace('$2', total);
     };
 
-    const doBulkOperation = async (operation, method, concurrency, host) => {
-      const { config, status } = sk;
-      const sel = bulkSelection.map((item) => toWebPath(status.webPath, item));
-      const results = [];
-      const total = sel.length;
-      const { processQueue } = await import(`${config.scriptRoot}/lib/process-queue.js`);
-      await processQueue(sel, async (file) => {
-        results.push(await sk[method](file));
-        if (total > 1) {
-          sk.showModal(getBulkText([results.length, total], 'progress', operation), true);
-        }
-      }, concurrency);
+    const showBulkOperationProgress = ({
+      operation,
+      progress,
+    }) => {
+      const { processed, total } = progress;
+      sk.showModal(getBulkText([processed, total], 'progress', operation), true);
+    };
+
+    const showBulkOperationSummary = ({
+      operation,
+      resources,
+      host,
+    }) => {
       const lines = [];
-      const ok = results.filter((res) => res.ok);
+      const ok = resources.filter((res) => res.status < 400);
       if (ok.length > 0) {
         lines.push(getBulkText([ok.length], 'result', operation, 'success'));
         const buttonGroup = createTag({
@@ -1725,21 +1777,23 @@
         }));
         lines.push(buttonGroup);
       }
-      const failed = results.filter((res) => !res.ok);
+      const failed = resources.filter((res) => res.status >= 400);
       if (failed.length > 0) {
         const failureText = getBulkText([failed.length], 'result', operation, 'failure');
         lines.push(failureText);
+        // localize error messages
         lines.push(...failed.map((item) => {
-          if (item.error.endsWith('docx with google not supported.')) {
-            item.error = getBulkText([1], 'result', operation, 'error_no_docx');
-          }
-          if (item.error.endsWith('xlsx with google not supported.')) {
-            item.error = getBulkText([1], 'result', operation, 'error_no_xlsx');
-          }
-          if (item.error.includes('source does not exist')) {
+          if (item.status === 404) {
             item.error = getBulkText([1], 'result', operation, 'error_no_source');
+          } else {
+            if (item.error?.endsWith('docx with google not supported.')) {
+              item.error = getBulkText([1], 'result', operation, 'error_no_docx');
+            }
+            if (item.error?.endsWith('xlsx with google not supported.')) {
+              item.error = getBulkText([1], 'result', operation, 'error_no_xlsx');
+            }
           }
-          return `${item.path.split('/').pop()}: ${item.error}`;
+          return `${item.path.split('/').pop()}${item.error ? `: ${item.error}` : ''}`;
         }));
       }
       lines.push(createTag({
@@ -1760,9 +1814,101 @@
       );
     };
 
+    const doBulkOperation = async ({
+      operation,
+      route = operation,
+      method = 'POST',
+      host,
+    }) => {
+      const { config, status } = sk;
+      const paths = validateWebPaths(bulkSelection
+        .map((item) => toWebPath(status.webPath, item)));
+      if (paths.length === 0) {
+        return;
+      }
+      try {
+        const bulkUrl = getAdminUrl(config, route, '/*');
+        const bulkResp = await fetch(bulkUrl, {
+          ...getAdminFetchOptions(),
+          method,
+          body: JSON.stringify({
+            paths,
+          }),
+          headers: {
+            'content-type': 'application/json',
+          },
+        });
+
+        if (bulkResp.status === 401 && paths.length > 100) {
+          sk.showModal({
+            message: i18n(sk, `bulk_error_${operation}_login_required`),
+            level: 2,
+          });
+          return;
+        } else if (!bulkResp.ok) {
+          throw new Error(bulkResp.headers['x-error']);
+        }
+
+        // start showing progress
+        const defaultProgress = {
+          processed: 0,
+          total: paths.length,
+        };
+        showBulkOperationProgress({
+          operation,
+          progress: defaultProgress,
+        });
+
+        // update progress based on job
+        const { job } = await bulkResp.json();
+        const { name: jobName } = job;
+        const jobStatusUrl = getAdminUrl(config, 'job', `/${operation}/${jobName}`);
+        const jobStatusPoll = window.setInterval(async () => {
+          try {
+            const jobStatusResp = await fetch(jobStatusUrl, getAdminFetchOptions());
+            const jobStatus = await jobStatusResp.json();
+            const { state, progress } = jobStatus;
+            if (state === 'stopped') {
+              // stop polling
+              window.clearInterval(jobStatusPoll);
+              // get job details
+              const jobDetailsUrl = getAdminUrl(config, 'job', `/${operation}/${jobName}/details`);
+              const jobDetailsResp = await fetch(jobDetailsUrl, getAdminFetchOptions());
+              const jobDetails = await jobDetailsResp.json();
+              const { data: { resources } = {} } = jobDetails;
+              showBulkOperationSummary({ operation, resources, host });
+            } else {
+              showBulkOperationProgress({
+                operation,
+                progress: progress || defaultProgress,
+              });
+            }
+          } catch (e) {
+            console.error(`failed to get status for job ${jobName}: ${e}`);
+            window.clearInterval(jobStatusPoll);
+          }
+        }, 1000);
+      } catch (e) {
+        console.error(`bulk ${operation} failed: ${e.message}`);
+        sk.showModal({
+          message: [
+            getBulkText([paths.length], 'result', operation, 'failure'),
+            e.message || i18n(sk, 'bulk_error'),
+          ],
+          level: 0,
+          sticky: true,
+        });
+      }
+    };
+
     const doBulkCopyUrls = async (hostProperty) => {
       const { config, status } = sk;
-      const urls = bulkSelection.map((item) => `https://${config[hostProperty]}${toWebPath(status.webPath, item)}`);
+      const paths = validateWebPaths(bulkSelection
+        .map((item) => toWebPath(status.webPath, item)));
+      if (paths.length === 0) {
+        return;
+      }
+      const urls = paths.map((path) => `https://${config[hostProperty]}${path}`);
       navigator.clipboard.writeText(urls.join('\n'));
       sk.showModal(i18n(sk, `copied_url${urls.length !== 1 ? 's' : ''}`));
     };
@@ -1802,8 +1948,14 @@
             sk.showModal(confirmText);
           } else if (window.confirm(confirmText)) {
             sk.showWait();
-            sk.addEventListener('statusfetched', () => {
-              doBulkOperation('preview', 'update', 2, sk.config.innerHost);
+            sk.addEventListener('statusfetched', ({ detail }) => {
+              const { data: { status } = {} } = detail;
+              if (status !== 401) {
+                doBulkOperation({
+                  operation: 'preview',
+                  host: sk.config.innerHost,
+                });
+              }
             }, { once: true });
             sk.fetchStatus(true);
           }
@@ -1824,8 +1976,15 @@
             sk.showModal(confirmText);
           } else if (window.confirm(confirmText)) {
             sk.showWait();
-            sk.addEventListener('statusfetched', () => {
-              doBulkOperation('publish', 'publish', 40, sk.config.host || sk.config.outerHost);
+            sk.addEventListener('statusfetched', ({ detail }) => {
+              const { data: { status } = {} } = detail;
+              if (status !== 401) {
+                doBulkOperation({
+                  operation: 'publish',
+                  route: 'live',
+                  host: sk.config.host || sk.config.outerHost,
+                });
+              }
             }, { once: true });
             sk.fetchStatus(true);
           }
@@ -1903,7 +2062,7 @@
       plugins.classList.add('hlx-sk-login-only');
       loginPlugin.firstElementChild.classList.add('accent');
       loginPlugin.firstElementChild.title = i18n(sk, 'user_login_hint');
-      plugins.append(loginPlugin);
+      plugins.prepend(loginPlugin);
     } else {
       // unhide plugins
       plugins.classList.remove('hlx-sk-login-only');
@@ -1997,7 +2156,6 @@
                       } else {
                         palette.classList.remove('hlx-sk-hidden');
                         button.classList.add('pressed');
-                        // log telemetry
                         sampleRUM('sidekick:paletteclosed', {
                           source: sk.location.href,
                           target: sk.status.webPath,
@@ -2056,10 +2214,9 @@
                     // open url in new window
                     window.open(target, `hlx-sk-${id || `custom-plugin-${i}`}`);
                   }
-                } else if (eventName) {
-                  // fire custom event
-                  fireEvent(sk, `custom:${eventName}`);
                 }
+                // fire custom event
+                fireEvent(sk, `custom:${eventName || id}`);
               },
               isDropdown: isContainer,
             },
@@ -2121,7 +2278,7 @@
           delete status.status;
           sk.addEventListener('statusfetched', () => sk.hideModal(), { once: true });
           sk.config = await initConfig(config, location);
-          sk.config.authToken = window.hlx.sidekickConfig.authToken;
+          sk.config.authTokenExpiry = window.hlx.sidekickConfig.authTokenExpiry || 0;
           addCustomPlugins(sk);
           encourageLogin(sk, false);
           sk.fetchStatus();
@@ -2167,7 +2324,7 @@
         // try 5 times after login window has been closed
         if (await checkProfileStatus(sk, 401)) {
           delete sk.status.profile;
-          delete sk.config.authToken;
+          delete sk.config.authTokenExpiry;
           sk.addEventListener('statusfetched', () => sk.hideModal(), { once: true });
           sk.fetchStatus();
           fireEvent(sk, 'loggedout');
@@ -2198,18 +2355,14 @@
     const toggle = sk.userMenu.firstElementChild;
     toggle.removeAttribute('disabled');
     const updateUserPicture = async (picture, name) => {
-      toggle.querySelector('.user-picture')?.remove();
       if (picture) {
         if (picture.startsWith('https://admin.hlx.page/')) {
           // fetch the image with auth token
-          const resp = await fetch(picture, {
-            headers: {
-              'x-auth-token': sk.config.authToken,
-            },
-          });
+          const resp = await fetch(picture);
           picture = resp.ok ? URL.createObjectURL(await resp.blob()) : null;
         }
         if (picture) {
+          toggle.querySelector('.user-picture')?.remove();
           toggle.querySelector('.user-icon').classList.add('user-icon-hidden');
           appendTag(toggle, {
             tag: 'img',
@@ -2294,7 +2447,7 @@
         sk.remove('user-info');
         sk.remove('user-switch');
         sk.remove('user-logout');
-      });
+      }, { once: true });
     } else {
       updateUserPicture();
       // login
@@ -2310,10 +2463,74 @@
       // clean up on login
       sk.addEventListener('loggedin', () => {
         sk.remove('user-login');
-      });
+      }, { once: true });
       if (!sk.status.loggedOut && sk.status.status === 401 && !sk.isAuthenticated()) {
         // encourage login
         encourageLogin(sk, true);
+      }
+    }
+
+    const { authTokenExpiry } = sk.config;
+    if (authTokenExpiry) {
+      // alert user before and after token expiry
+      const now = Date.now();
+      if (authTokenExpiry > now && !sk.config.authTokenTimers) {
+        const showLoginDialog = (text) => {
+          const buttonGroup = createTag({
+            tag: 'span',
+            attrs: {
+              class: 'hlx-sk-modal-button-group',
+            },
+          });
+          buttonGroup.append(createTag({
+            tag: 'button',
+            text: i18n(sk, 'user_login'),
+            attrs: {
+              class: 'accent',
+            },
+            lstnrs: {
+              click: () => {
+                login(sk);
+              },
+            },
+          }));
+          buttonGroup.append(createTag({
+            tag: 'button',
+            text: i18n(sk, 'cancel'),
+            lstnrs: {
+              click: () => {
+                sk.hideModal();
+              },
+            },
+          }));
+          sk.showModal(
+            [text, buttonGroup],
+            true,
+          );
+        };
+
+        // alert user 1 second after token has expired
+        let delay = authTokenExpiry - now + 1000;
+        if (delay < 0) {
+          delay = 0;
+        }
+        window.setTimeout(async () => {
+          // fetch status and double check
+          sk.addEventListener('statusfetched', async ({ detail }) => {
+            const { data: status } = detail;
+            if (sk.config.authTokenExpiry === authTokenExpiry && status.status === 401) {
+              delete sk.config.authTokenExpiry;
+              delete sk.config.authTokenTimers;
+              showLoginDialog(i18n(sk, 'user_login_expired'));
+            } else if (sk.config.authTokenTimers) {
+              // clean up existing warning dialogs
+              sk.hideModal();
+              delete sk.config.authTokenTimers;
+            }
+          }, { once: true });
+          sk.fetchStatus();
+        }, delay);
+        sk.config.authTokenTimers = true;
       }
     }
   }
@@ -2491,9 +2708,9 @@
   /**
    * Pushes down the page content to make room for the sidekick.
    * @private
-   * @see {@link SidekickConfig.noPushDown}
    * @param {Sidekick} sk The sidekick
    * @param {number} skHeight The current height of the sidekick (optional)
+   * @see SidekickConfig.pushDown
    */
   function pushDownContent(sk, skHeight) {
     const { config, location } = sk;
@@ -2636,7 +2853,7 @@
    * Hides the special view.
    * @private
    * @param {Sidekick} sk The sidekick
-   * @param {boolean} click {@code true} if triggered by user
+   * @param {boolean} userAction <code>true</code> if triggered by user
    */
   function hideView(sk, userAction) {
     const viewOverlay = getViewOverlay(sk);
@@ -2655,7 +2872,6 @@
       });
     }
     if (userAction) {
-      // log telemetry
       sampleRUM('sidekick:viewhidden', {
         source: sk.location.href,
         target: sk.status.webPath,
@@ -2736,6 +2952,9 @@
               click: () => {
                 this.fetchStatus();
                 updateModifiedDates(this);
+                sampleRUM('sidekick:info', {
+                  source: this.location.href,
+                });
               },
             },
             button: {
@@ -2804,6 +3023,7 @@
         addUnpublishPlugin(this);
         addBulkPlugins(this);
         addCustomPlugins(this);
+        addTransientAddProjectPlugin(this);
         // fetch status
         this.fetchStatus();
         // push down content
@@ -2821,6 +3041,14 @@
             // disable advanced mode
             this.root.classList.remove('hlx-sk-advanced');
           }
+        });
+        // platform and browser data
+        const platform = detectPlatform(navigator.userAgent);
+        const browser = detectBrowser(navigator.userAgent);
+        const mode = this.config.scriptUrl.startsWith('https://') ? 'bookmarklet' : 'extension';
+        sampleRUM('sidekick:loaded', {
+          source: this.location.href,
+          target: `${platform}:${browser}:${mode}`,
         });
         // announce to the document that the sidekick is ready
         document.dispatchEvent(new CustomEvent('sidekick-ready'));
@@ -2978,6 +3206,7 @@
      * Recalculates the height of the sidekick and pushes down the
      * page content by that amount to make room for the sidekick.
      * @returns {Sidekick} The sidekick
+     * @see SidekickConfig.pushDown
      */
     checkPushDownContent() {
       const sk = this instanceof Sidekick ? this : window.hlx.sidekick;
@@ -2997,8 +3226,8 @@
     show() {
       if (this.root.classList.contains('hlx-sk-hidden')) {
         this.root.classList.remove('hlx-sk-hidden');
+        fireEvent(this, 'shown');
       }
-      fireEvent(this, 'shown');
       return this;
     }
 
@@ -3246,9 +3475,10 @@
     }
 
     /**
-     * @deprecated Use {@link isProject} instead
      * Checks if the current location is a configured project URL.
      * @returns {boolean} <code>true</code> if project URL, else <code>false</code>
+     * @deprecated
+     * @see isProject
      */
     isHelix() {
       return this.isProject();
@@ -3283,6 +3513,10 @@
         // unknown feature
         return false;
       }
+      if (this.status[feature].status === 403) {
+        // forbidden
+        return false;
+      }
       if (!this.status[feature].permissions) {
         // feature doesn't require permissions
         return true;
@@ -3292,9 +3526,10 @@
 
     /**
      * Displays a non-sticky notification.
-     * @deprecated Use <code>showModal(<Object>)</code> instead
      * @param {string|string[]} message The message (lines) to display
      * @param {number}          level error (0), warning (1), of info (2)
+     * @deprecated
+     * @see showModal
      */
     notify(message, level = 2) {
       this.showModal({
@@ -3594,8 +3829,8 @@
     /**
      * Switches to (or opens) a given environment.
      * @param {string} targetEnv One of the following environments:
-     *        <pre>dev</pre>, <pre>preview</pre>, <pre>live</pre> or <pre>prod</pre>
-     * @param {boolean} open=false <pre>true</pre> if environment should be opened in new tab
+     *        <code>dev</code>, <code>preview</code>, <code>live</code> or <code>prod</code>
+     * @param {boolean} open=false <code>true</code> if environment should be opened in new tab
      * @fires Sidekick#envswitched
      * @returns {Sidekick} The sidekick
      */
@@ -3649,6 +3884,7 @@
     /**
      * Updates the preview or code of the current resource.
      * @fires Sidekick#updated
+     * @fires Sidekick#previewed
      * @returns {Response} The response object
      */
     async update(path) {
@@ -3671,7 +3907,10 @@
             await fetch(`https://${config.innerHost}${path}`, { cache: 'reload', mode: 'no-cors' });
           }
           respPath = (await resp.json()).webPath;
-          fireEvent(this, 'updated', respPath);
+          fireEvent(this, 'updated', respPath); // @deprecated for content, use for code only
+          if (this.isContent()) {
+            fireEvent(this, 'previewed', respPath);
+          }
         }
       } catch (e) {
         console.error('failed to update', path, e);
@@ -3718,7 +3957,7 @@
     }
 
     /**
-     * Publishes the page at the specified path if <pre>config.host</pre> is defined.
+     * Publishes the page at the specified path if <code>config.host</code> is defined.
      * @param {string} path The path of the page to publish
      * @fires Sidekick#published
      * @returns {Response} The response object
@@ -3790,6 +4029,36 @@
       return resp;
     }
   }
+
+  /**
+   * @external
+   * @event document#sidekick-ready
+   * @type {CustomEvent}
+   * @arg {CustomEvent} e
+   * @prop {Sidekick} e.detail.data The sidekick
+   * @description This event is fired on the <code>document</code> once the sidekick is ready
+   */
+
+  /**
+   * @external
+   * @name "window.hlx.sidekickConfig"
+   * @type {SidekickConfig}
+   * @description The global variable holding the initial sidekick configuration.
+   */
+
+  /**
+   * @external
+   * @name "window.hlx.sidekick"
+   * @type {Sidekick}
+   * @description The global variable referencing the {@link Sidekick} singleton.
+   */
+
+  /**
+   * @external
+   * @name "window.hlx.sidekickScript"
+   * @type {Element}
+   * @description The <code>script</code> element which loaded the sidekick module.
+   */
 
   /**
    * @external

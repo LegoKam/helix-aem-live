@@ -11,7 +11,6 @@
  */
 
 /* eslint-disable
-  no-await-in-loop,
   no-param-reassign,
   consistent-return,
   no-plusplus,
@@ -23,6 +22,7 @@ import {
   copyBlockToClipboard,
   copyPageToClipboard,
   copyDefaultContentToClipboard,
+  getBlockTableStyle,
 } from './utils.js';
 import {
   createTag, removeAllEventListeners, setURLParams,
@@ -55,35 +55,74 @@ function renderScaffolding() {
 }
 
 /**
+ * Supported structures for the configuration is a list of objects like the below
+ * default or a shorthand list of two breakpoints which gets merged into the default.
+ * [600, 900] will overwrite the default sizes with '599px' and '899px' as breakpoints.
+ *
+ * @param {*} contextViewPorts project specific config object
+ * @returns viewport options
+ */
+function getViewPorts(contextViewPorts) {
+  const viewPorts = [
+    {
+      width: '599px',
+      label: 'Mobile',
+      icon: 'device-phone',
+    },
+    {
+      width: '899px',
+      label: 'Tablet',
+      icon: 'device-tablet',
+    },
+    {
+      width: '100%',
+      label: 'Desktop',
+      icon: 'device-desktop',
+      default: true,
+    },
+  ];
+  if (contextViewPorts && contextViewPorts.length > 0) {
+    if (contextViewPorts.length === 2
+        && contextViewPorts.every(breakpoint => Number.isInteger(breakpoint))) {
+      for (let i = 0; i < 2; i += 1) {
+        viewPorts[i].width = `${contextViewPorts[i] - 1}px`;
+      }
+    } else {
+      return contextViewPorts;
+    }
+  }
+  return viewPorts;
+}
+
+/**
  * Renders the preview frame including the top action bar, frame view and details container
  * @param {HTMLElement} container
  */
-function renderFrame(container) {
+function renderFrame(contextViewPorts, container) {
   if (!isFrameLoaded(container)) {
+    const viewPorts = getViewPorts(contextViewPorts);
+    const viewPortsHTML = viewPorts.map((viewPort, index) => /* html */`
+      <sp-action-button value="viewPort${index}">
+        <sp-icon-${viewPort.icon} slot="icon"></sp-icon-${viewPort.icon}>
+          ${viewPort.label}
+        </sp-action-button>
+    `).join('');
+    const selectedViewPortIndex = viewPorts.findIndex(viewPort => viewPort.default);
+
     const contentContainer = container.querySelector('.content');
     contentContainer.innerHTML = /* html */`
       <sp-split-view
         vertical
         resizable
+        collapsible
         primary-size="2600"
         secondary-min="200"
         splitter-pos="250"
       >
         <div class="view">
           <div class="action-bar">
-            <sp-action-group compact selects="single" selected="desktop">
-              <sp-action-button value="mobile">
-                  <sp-icon-device-phone slot="icon"></sp-icon-device-phone>
-                  Mobile
-              </sp-action-button>
-              <sp-action-button value="tablet">
-                  <sp-icon-device-tablet slot="icon"></sp-icon-device-tablet>
-                  Tablet
-              </sp-action-button>
-              <sp-action-button value="desktop">
-                  <sp-icon-device-desktop slot="icon"></sp-icon-device-desktop>
-                  Desktop
-              </sp-action-button>
+            <sp-action-group compact selects="single" selected="viewPort${selectedViewPortIndex}">
+              ${viewPortsHTML}
             </sp-action-group>
             <sp-divider size="s"></sp-divider>
           </div>
@@ -105,23 +144,16 @@ function renderFrame(container) {
     `;
 
     const actionGroup = container.querySelector('sp-action-group');
-    actionGroup.selected = 'desktop';
+    actionGroup.selected = `viewPort${selectedViewPortIndex}`;
 
-    // Setup listeners for the top action bar
     const frameView = container.querySelector('.frame-view');
-    const mobileViewButton = removeAllEventListeners(container.querySelector('sp-action-button[value="mobile"]'));
-    mobileViewButton?.addEventListener('click', () => {
-      frameView.style.width = '480px';
-    });
+    frameView.style.width = viewPorts[selectedViewPortIndex].width;
 
-    const tabletViewButton = removeAllEventListeners(container.querySelector('sp-action-button[value="tablet"]'));
-    tabletViewButton?.addEventListener('click', () => {
-      frameView.style.width = '768px';
-    });
-
-    const desktopViewButton = removeAllEventListeners(container.querySelector('sp-action-button[value="desktop"]'));
-    desktopViewButton?.addEventListener('click', () => {
-      frameView.style.width = '100%';
+    [...container.querySelectorAll('sp-action-button')].forEach((button, index) => {
+      const buttonClone = removeAllEventListeners(button);
+      buttonClone?.addEventListener('click', () => {
+        frameView.style.width = viewPorts[index].width;
+      });
     });
   }
 }
@@ -163,66 +195,70 @@ function updateDetailsContainer(container, title, description) {
  * @param {Object} pageMetadata The page metadata
  */
 function attachCopyButtonEventListener(
+  context,
   container,
   blockRenderer,
   defaultLibraryMetadata,
+  sectionLibraryMetadata,
   pageMetadata,
 ) {
   const copyButton = removeAllEventListeners(container.querySelector('.content .copy-button'));
-  copyButton.addEventListener('click', () => {
+  copyButton.addEventListener('click', async () => {
     const copyElement = blockRenderer.getBlockElement();
     const copyWrapper = blockRenderer.getBlockWrapper();
     const copyBlockData = blockRenderer.getBlockData();
 
-    // Return the copied DOM in the toast message so it can be tested
-    // Cannot read or write clipboard in tests
-    let copiedDOM;
-
     // Are we trying to copy a block, a page or default content?
     // The copy operation is slightly different depending on which
-    if (defaultLibraryMetadata.type === 'template' || defaultLibraryMetadata.multiSectionBlock || defaultLibraryMetadata.compoundBlock) {
-      copiedDOM = copyPageToClipboard(copyWrapper, copyBlockData.url, pageMetadata);
+    if (defaultLibraryMetadata.type === 'template' || sectionLibraryMetadata.multiSectionBlock || sectionLibraryMetadata.compoundBlock) {
+      await copyPageToClipboard(
+        context,
+        copyWrapper,
+        copyBlockData.url,
+        pageMetadata,
+      );
     } else if (blockRenderer.isBlock) {
-      copiedDOM = copyBlockToClipboard(
+      const tableStyle = getBlockTableStyle(defaultLibraryMetadata, sectionLibraryMetadata);
+      await copyBlockToClipboard(
+        context,
         copyWrapper,
         getBlockName(copyElement, true),
         copyBlockData.url,
+        tableStyle,
       );
     } else {
-      copiedDOM = copyDefaultContentToClipboard(copyWrapper, copyBlockData.url);
+      await copyDefaultContentToClipboard(context, copyWrapper, copyBlockData.url);
     }
 
-    container.dispatchEvent(new CustomEvent('Toast', { detail: { message: 'Copied Block', result: copiedDOM } }));
+    container.dispatchEvent(new CustomEvent('Toast', { detail: { message: 'Copied Block' } }));
   });
 }
 
-function onBlockListCopyButtonClicked(event, container) {
+async function onBlockListCopyButtonClicked(context, event, container) {
   const {
     blockWrapper: wrapper,
     blockNameWithVariant: name,
     blockURL,
     defaultLibraryMetadata,
+    sectionLibraryMetadata,
     pageMetadata,
   } = event.detail;
-
-  // Return the copied DOM in the toast message so it can be tested
-  // Cannot read or write clipboard in tests
-  let copiedDOM;
 
   // We may not have rendered the block yet, so we need to check for a block to know if
   // we are dealing with a block or default content
   const block = wrapper.querySelector(':scope > div:not(.section-metadata)');
-  if (defaultLibraryMetadata && (defaultLibraryMetadata.type === 'template' || defaultLibraryMetadata.multiSectionBlock || defaultLibraryMetadata.compoundBlock)) {
-    copiedDOM = copyPageToClipboard(wrapper, blockURL, pageMetadata);
+  if (defaultLibraryMetadata && (defaultLibraryMetadata.type === 'template' || sectionLibraryMetadata.multiSectionBlock || sectionLibraryMetadata.compoundBlock)) {
+    await copyPageToClipboard(context, wrapper, blockURL, pageMetadata);
   } else if (block) {
-    copiedDOM = copyBlockToClipboard(wrapper, name, blockURL);
+    const tableStyle = getBlockTableStyle(defaultLibraryMetadata, sectionLibraryMetadata);
+    await copyBlockToClipboard(context, wrapper, name, blockURL, tableStyle);
   } else {
-    copiedDOM = copyDefaultContentToClipboard(wrapper, blockURL);
+    await copyDefaultContentToClipboard(context, wrapper, blockURL);
   }
-  container.dispatchEvent(new CustomEvent('Toast', { detail: { message: 'Copied Block', target: wrapper, result: copiedDOM } }));
+  container.dispatchEvent(new CustomEvent('Toast', { detail: { message: 'Copied Block', target: wrapper } }));
 }
 
-function loadBlock(event, container) {
+function loadBlock(context, event, container) {
   const content = container.querySelector('.block-library');
   const {
     blockWrapper,
@@ -237,7 +273,7 @@ function loadBlock(event, container) {
   const blockName = getBlockName(blockElement, false);
 
   // Render the preview frame if we haven't already
-  renderFrame(content);
+  renderFrame(context.viewPorts, content);
 
   // For blocks we pull the block name from section metadata or the name given to the block
   const authoredBlockName = sectionLibraryMetadata.name ?? getBlockName(blockElement);
@@ -252,6 +288,24 @@ function loadBlock(event, container) {
   // Set block title & description in UI
   updateDetailsContainer(content, authoredBlockName, blockDescription);
 
+  const disableCopyButton = sectionLibraryMetadata.disablecopy
+    ?? defaultLibraryMetadata.disablecopy
+    ?? false;
+
+  const copyButton = container.querySelector('.content .copy-button');
+  copyButton.removeAttribute('disabled');
+  if (disableCopyButton) {
+    copyButton.setAttribute('disabled', 'true');
+  }
+
+  const hideDetailsView = sectionLibraryMetadata.hidedetailsview
+  ?? defaultLibraryMetadata.hidedetailsview
+  ?? context.hidedetailsview
+  ?? false;
+
+  const splitView = container.querySelector('.content sp-split-view');
+  splitView.primarySize = hideDetailsView ? '100%' : '75%';
+
   const blockRenderer = content.querySelector('block-renderer');
 
   // If the block element exists, load the block
@@ -260,6 +314,7 @@ function loadBlock(event, container) {
     blockData,
     blockWrapper,
     defaultLibraryMetadata,
+    sectionLibraryMetadata,
     container,
   );
 
@@ -267,23 +322,31 @@ function loadBlock(event, container) {
   setURLParams([['path', blockData.path], ['index', event.detail.index]]);
 
   // Attach copy button event listener
-  attachCopyButtonEventListener(container, blockRenderer, defaultLibraryMetadata, undefined);
+  attachCopyButtonEventListener(
+    context,
+    container,
+    blockRenderer,
+    defaultLibraryMetadata,
+    sectionLibraryMetadata,
+    undefined,
+  );
 
   // Track block view
   sampleRUM('library:blockviewed', { target: blockData.url });
 }
 
-function loadTemplate(event, container) {
+function loadTemplate(context, event, container) {
   const content = container.querySelector('.block-library');
   const {
     blockWrapper,
     blockData,
     defaultLibraryMetadata,
+    sectionLibraryMetadata,
     pageMetadata,
   } = event.detail;
 
   // Render the preview frame if we haven't already
-  renderFrame(content);
+  renderFrame(context.viewPorts, content);
 
   // For templates we pull the template name from default library metadata
   // or the name given to the document in the library sheet.
@@ -303,6 +366,7 @@ function loadTemplate(event, container) {
     blockData,
     blockWrapper,
     defaultLibraryMetadata,
+    sectionLibraryMetadata,
     container,
   );
 
@@ -310,7 +374,14 @@ function loadTemplate(event, container) {
   setURLParams([['path', blockData.path]], ['index']);
 
   // Attach copy button event listener
-  attachCopyButtonEventListener(container, blockRenderer, defaultLibraryMetadata, pageMetadata);
+  attachCopyButtonEventListener(
+    context,
+    container,
+    blockRenderer,
+    defaultLibraryMetadata,
+    sectionLibraryMetadata,
+    pageMetadata,
+  );
 
   // Track block view
   sampleRUM('library:blockviewed', { target: blockData.url });
@@ -321,7 +392,7 @@ function loadTemplate(event, container) {
  * @param {HTMLElement} container The container to render the plugin in
  * @param {Object} data The data contained in the plugin sheet
  */
-export async function decorate(container, data) {
+export async function decorate(container, data, searchTerm, context) {
   container.dispatchEvent(new CustomEvent('ShowLoader'));
 
   const content = createTag('div', { class: 'block-library' }, renderScaffolding());
@@ -336,13 +407,13 @@ export async function decorate(container, data) {
   });
 
   // Handle LoadTemplate events
-  blockList.addEventListener('LoadTemplate', loadPageEvent => loadTemplate(loadPageEvent, container));
+  blockList.addEventListener('LoadTemplate', loadPageEvent => loadTemplate(context, loadPageEvent, container));
 
   // Handle LoadBlock events
-  blockList.addEventListener('LoadBlock', loadBlockEvent => loadBlock(loadBlockEvent, container));
+  blockList.addEventListener('LoadBlock', loadBlockEvent => loadBlock(context, loadBlockEvent, container));
 
   // Handle CopyBlock events from the block list
-  blockList.addEventListener('CopyBlock', blockListCopyEvent => onBlockListCopyButtonClicked(blockListCopyEvent, container));
+  blockList.addEventListener('CopyBlock', blockListCopyEvent => onBlockListCopyButtonClicked(context, blockListCopyEvent, container));
 
   const search = content.querySelector('sp-search');
   search.addEventListener('input', (e) => {

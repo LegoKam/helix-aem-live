@@ -76,7 +76,7 @@
 }
 
 .inner-content strong {
-    background: var(--color-accent-highlight-yellow);
+   /* background: var(--color-accent-highlight-yellow);*/
 }
 
 .inner-content a.button:any-link {

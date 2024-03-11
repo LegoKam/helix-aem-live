@@ -7,6 +7,17 @@
       "environments": ["edit"],
       "url": "/tools/sidekick/library/library.html",
       "includePaths": ["**.docx**"]
+    },{
+      "id": "generate-variations",
+      "title": "Generate Variations",
+      "url": "https://experience.adobe.com/aem/generate-variations",
+      "passConfig": true,
+      "environments": [
+        "edit"
+      ],
+      "includePaths": [
+        "**.docx**"
+      ]
     }
   ]
 }

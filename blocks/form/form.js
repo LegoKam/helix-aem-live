@@ -50,6 +50,7 @@ async function submitForm(form) {
 }
 
 function createButton(fd) {
+    console.log(fd);
   const button = document.createElement('button');
   button.textContent = fd.Label;
   button.classList.add('button');
